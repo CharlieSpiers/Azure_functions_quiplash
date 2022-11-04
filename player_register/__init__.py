@@ -1,4 +1,5 @@
 import logging
+import json
 
 import azure.functions as func
 
@@ -6,19 +7,28 @@ import azure.functions as func
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
+    player_name = req.get_json().get('username')
+    player_password = req.get_json().get('password')
 
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+    if not (4 < len(player_name) < 16):
+        return func.HttpResponse(
+            body=json.dumps({"result": False, "msg": "Username less than 4 characters or more than 16 characters"})
+        )
+    elif not (8 < len(player_password) < 24):
+        return func.HttpResponse(
+            body=json.dumps({"result": False, "msg": "Password less than 8 characters or more than 24 characters"})
+        )
+
+    # if the credentials are the correct length, check the database:
+    in_database = True  # TODO
+
+    if in_database:
+        # TODO: Create user in database
+        return func.HttpResponse(
+            body=json.dumps({"result": True, "msg": "OK"})
+        )
     else:
         return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
+            body=json.dumps({"result": False, "msg": "Username already exists"})
         )
+

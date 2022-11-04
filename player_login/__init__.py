@@ -1,4 +1,5 @@
 import logging
+import json
 
 import azure.functions as func
 
@@ -6,19 +7,16 @@ import azure.functions as func
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
+    player_name = req.get_json().get('username')
+    player_password = req.get_json().get('password')
 
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
+    matches_database = True  # TODO
+
+    if matches_database:
+        return func.HttpResponse(
+            body=json.dumps({"result": True, "msg": "OK"})
+        )
     else:
         return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
+            body=json.dumps({"result": False, "msg": "Username or password incorrect"})
         )
