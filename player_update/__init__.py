@@ -1,10 +1,9 @@
 import logging
 import json
-import azure.cosmos as cosmos
-import azure.cosmos.exceptions as exceptions
-import config as config
 
 import azure.functions as func
+
+import database_functions
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
@@ -13,14 +12,32 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     player_name = req.get_json().get('username')
     player_password = req.get_json().get('password')
 
-    client = cosmos.cosmos_client.CosmosClient(config.settings['db_URI'], config.settings['db_key'])
-    db_client = client.get_database_client(config.settings['db_id'])
+    try:
+        database_functions.verify_player(player_name, player_password)
 
-    if not (4 < len(player_name) < 16):
+    except database_functions.not_a_user_exception:
         return func.HttpResponse(
-            body=json.dumps({"result": False, "msg": "Username less than 4 characters or more than 16 characters"})
+            body=json.dumps({"result": False, "msg": "user does not exist"})
         )
-    elif not (8 < len(player_password) < 24):
+
+    except database_functions.incorrect_password_exception:
         return func.HttpResponse(
-            body=json.dumps({"result": False, "msg": "Password less than 8 characters or more than 24 characters"})
+            body=json.dumps({"result": False, "msg": "wrong password"})
         )
+
+    # Now the user is verified:
+    add_to_games_played = 0
+    add_to_score = 0
+
+    # TODO: Update the values there in try clauses
+
+    if add_to_games_played < 0 or add_to_score < 0:
+        return func.HttpResponse(
+            body=json.dumps({"result": False, "msg": "Value to add is <=0"})
+        )
+
+    # TODO: Add the values to the database
+
+    return func.HttpResponse(
+        body=json.dumps({"result": True, "msg": "OK"})
+    )
