@@ -4,19 +4,54 @@ import config
 
 
 def verify_player(username, password):
-    client = cosmos.cosmos_client.CosmosClient(config.settings['db_URI'], config.settings['db_key'])
-    db_client = client.get_database_client(config.settings['db_id'])
-    player_container = db_client.get_container_client(config.settings['player_container'])
+    """
+    Uses get_player, then checks their password matches.
+    Throws incorrect_password_exception and inherited exceptions
+    Returns the user in json if password matches
+    """
+    user = get_player(username)
+    if user['password'] != password:
+        print("password was incorrect")
+        raise incorrect_password_exception
+    else:
+        return user
 
+
+def add_player(username, password):
+    """
+    Adds a new user if they do not already exist
+    Throws user_already_exists_exception
+    """
+    player_container = _get_player_container()
+
+
+def get_player(username):
+    """
+    Gets the user object, if it exists
+    Throws not_a_user_exception
+    Returns the user in json if they exists
+    """
+    player_container = _get_player_container()
     try:
-        user = player_container.read_item(username)
-        if user['password'] != password:
-            print("password was incorrect")
-            raise incorrect_password_exception
-
+        return player_container.read_item(username)
     except exceptions.CosmosHttpResponseError:
         print("Username was not found")
         raise not_a_user_exception
+
+
+def update_player(user_json):
+    player_container = _get_player_container()
+
+
+def get_all_players():
+    player_container = _get_player_container()
+    return player_container.read_all_items()
+
+
+def _get_player_container():
+    client = cosmos.cosmos_client.CosmosClient(config.settings['db_URI'], config.settings['db_key'])
+    db_client = client.get_database_client(config.settings['db_id'])
+    return db_client.get_container_client(config.settings['player_container'])
 
 
 class not_a_user_exception(Exception):
@@ -24,4 +59,8 @@ class not_a_user_exception(Exception):
 
 
 class incorrect_password_exception(Exception):
+    pass
+
+
+class user_already_exists_exception(Exception):
     pass

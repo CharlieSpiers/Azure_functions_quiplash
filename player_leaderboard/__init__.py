@@ -1,24 +1,24 @@
+import json
 import logging
 
 import azure.functions as func
+
+import database_functions
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
-
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
+    top_k = int(req.get_json().get('top'))
+    if not top_k > 0:
         return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
+            body=json.dumps([])
         )
+
+    players = database_functions.get_all_players()
+    sorted_by_name = sorted(players, key=lambda x: x['username'])
+    sorted_by_score = sorted(sorted_by_name, key=lambda x: x['total_score'])
+
+    return func.HttpResponse(
+        body=json.dumps(sorted_by_score[:top_k])
+    )

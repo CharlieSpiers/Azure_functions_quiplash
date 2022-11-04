@@ -3,6 +3,8 @@ import json
 
 import azure.functions as func
 
+import database_functions
+
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
     logging.info('Python HTTP trigger function processed a request.')
@@ -19,16 +21,14 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             body=json.dumps({"result": False, "msg": "Password less than 8 characters or more than 24 characters"})
         )
 
-    # if the credentials are the correct length, check the database:
-    in_database = True  # TODO
-
-    if in_database:
-        # TODO: Create user in database
+    # if the credentials are the correct length, try to add to the database:
+    try:
+        database_functions.add_player(player_name, player_password)
         return func.HttpResponse(
             body=json.dumps({"result": True, "msg": "OK"})
         )
-    else:
+
+    except database_functions.user_already_exists_exception:
         return func.HttpResponse(
             body=json.dumps({"result": False, "msg": "Username already exists"})
         )
-
