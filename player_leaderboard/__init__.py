@@ -3,7 +3,7 @@ import logging
 
 import azure.functions as func
 
-import database_functions
+from database_functions import get_all_players
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
@@ -15,7 +15,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             body=json.dumps([])
         )
 
-    players = database_functions.get_all_players()
+    players = get_all_players()
     sorted_by_name = sorted(players, key=lambda x: x['username'])
     sorted_by_score = sorted(sorted_by_name, key=lambda x: x['total_score'])
 

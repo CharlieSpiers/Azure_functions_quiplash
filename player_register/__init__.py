@@ -3,7 +3,7 @@ import json
 
 import azure.functions as func
 
-import database_functions
+from database_functions import add_player, player_already_exists_exception
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
@@ -23,12 +23,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     # if the credentials are the correct length, try to add to the database:
     try:
-        database_functions.add_player(player_name, player_password)
+        add_player(player_name, player_password)
         return func.HttpResponse(
             body=json.dumps({"result": True, "msg": "OK"})
         )
 
-    except database_functions.player_already_exists_exception:
+    except player_already_exists_exception:
         return func.HttpResponse(
             body=json.dumps({"result": False, "msg": "Username already exists"})
         )

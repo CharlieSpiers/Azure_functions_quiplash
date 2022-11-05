@@ -2,7 +2,7 @@ import logging
 import json
 
 import azure.functions as func
-import database_functions
+from database_functions import verify_player, not_a_player_exception, incorrect_password_exception
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
@@ -12,8 +12,8 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     player_password = req.get_json().get('password')
 
     try:
-        database_functions.verify_player(player_name, player_password)
-    except database_functions.not_a_player_exception or database_functions.incorrect_password_exception:
+        verify_player(player_name, player_password)
+    except (not_a_player_exception, incorrect_password_exception):
         return func.HttpResponse(
             body=json.dumps({"result": False, "msg": "Username or password incorrect"})
         )

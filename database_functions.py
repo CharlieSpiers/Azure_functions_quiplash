@@ -9,7 +9,7 @@ def verify_player(username, password):
     """
     Uses get_player, then checks their password matches.
     Throws incorrect_password_exception and inherited exceptions
-    Returns the user in json if password matches
+    Returns the json_data in json_data if password matches
     """
     user = get_player(username)
     if user['password'] != password:
@@ -21,15 +21,15 @@ def verify_player(username, password):
 
 def add_player(username, password):
     """
-    Adds a new user if they do not already exist
+    Adds a new json_data if they do not already exist
     Throws player_already_exists_exception
     """
     player_container = _get_player_container()
     user_json = {
         'username': username,
         'password': password,
-        'games_played': '0',
-        'total_score': '0'
+        'games_played': 0,
+        'total_score': 0
     }
 
     try:
@@ -40,9 +40,9 @@ def add_player(username, password):
 
 def get_player(username):
     """
-    Gets the user object, if it exists
+    Gets the json_data object, if it exists
     Throws not_a_player_exception
-    Returns the user in json if they exists
+    Returns the json_data in json_data if they exists
     """
     player_container = _get_player_container()
     try:
