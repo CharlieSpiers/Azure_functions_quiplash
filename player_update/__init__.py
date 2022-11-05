@@ -26,7 +26,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         user = database_functions.verify_player(player_name, player_password)
 
-    except database_functions.not_a_user_exception:
+    except database_functions.not_a_player_exception:
         return func.HttpResponse(
             body=json.dumps({"result": False, "msg": "user does not exist"})
         )

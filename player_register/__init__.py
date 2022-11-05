@@ -28,7 +28,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
             body=json.dumps({"result": True, "msg": "OK"})
         )
 
-    except database_functions.user_already_exists_exception:
+    except database_functions.player_already_exists_exception:
         return func.HttpResponse(
             body=json.dumps({"result": False, "msg": "Username already exists"})
         )

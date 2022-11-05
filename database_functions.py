@@ -1,3 +1,5 @@
+import json
+
 from azure import cosmos
 import azure.cosmos.exceptions as exceptions
 import config
@@ -20,15 +22,26 @@ def verify_player(username, password):
 def add_player(username, password):
     """
     Adds a new user if they do not already exist
-    Throws user_already_exists_exception
+    Throws player_already_exists_exception
     """
     player_container = _get_player_container()
+    user_json = {
+        'username': username,
+        'password': password,
+        'games_played': '0',
+        'total_score': '0'
+    }
+
+    try:
+        player_container.create_item(body=user_json)
+    except exceptions.CosmosHttpResponseError:
+        raise player_already_exists_exception
 
 
 def get_player(username):
     """
     Gets the user object, if it exists
-    Throws not_a_user_exception
+    Throws not_a_player_exception
     Returns the user in json if they exists
     """
     player_container = _get_player_container()
@@ -36,11 +49,14 @@ def get_player(username):
         return player_container.read_item(username)
     except exceptions.CosmosHttpResponseError:
         print("Username was not found")
-        raise not_a_user_exception
+        raise not_a_player_exception
 
 
 def update_player(user_json):
+    verify_player(user_json['username'], user_json['password'])
+
     player_container = _get_player_container()
+    # TODO: Update the player in the database
 
 
 def get_all_players():
@@ -54,7 +70,7 @@ def _get_player_container():
     return db_client.get_container_client(config.settings['player_container'])
 
 
-class not_a_user_exception(Exception):
+class not_a_player_exception(Exception):
     pass
 
 
@@ -62,5 +78,5 @@ class incorrect_password_exception(Exception):
     pass
 
 
-class user_already_exists_exception(Exception):
+class player_already_exists_exception(Exception):
     pass
