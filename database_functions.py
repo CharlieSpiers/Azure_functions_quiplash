@@ -1,8 +1,7 @@
-import json
-
 from azure import cosmos
 import azure.cosmos.exceptions as exceptions
 import config
+from validate_player_prompt import validate_player_dict, incorrect_format_exception
 
 
 def verify_player(username, password):
@@ -25,17 +24,19 @@ def add_player(username, password):
     Throws player_already_exists_exception
     """
     player_container = _get_player_container()
-    user_json = {
+    player_dict = {
         'username': username,
         'password': password,
         'games_played': 0,
         'total_score': 0
     }
-
+    validate_player_dict(player_dict)
     try:
-        player_container.create_item(body=user_json)
+        player_container.create_item(body=player_dict)
     except exceptions.CosmosHttpResponseError:
         raise player_already_exists_exception
+    except incorrect_format_exception:
+        print("The ")
 
 
 def get_player(username):
