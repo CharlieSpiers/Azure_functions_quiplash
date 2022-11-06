@@ -11,14 +11,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 
     top_k = int(req.get_json().get('top'))
     if not top_k > 0:
-        return func.HttpResponse(
-            body=json.dumps([])
-        )
+        return func.HttpResponse(body=json.dumps([]))
 
     players = get_all_players()
     sorted_by_name = sorted(players, key=lambda x: x['username'])
     sorted_by_score = sorted(sorted_by_name, key=lambda x: x['total_score'])
 
-    return func.HttpResponse(
-        body=json.dumps(sorted_by_score[:top_k])
-    )
+    return func.HttpResponse(body=json.dumps(sorted_by_score[:top_k]))

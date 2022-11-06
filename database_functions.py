@@ -1,3 +1,5 @@
+import logging
+
 from azure import cosmos
 import azure.cosmos.exceptions as exceptions
 import config
@@ -30,9 +32,8 @@ def add_player(username, password):
         'games_played': 0,
         'total_score': 0
     }
-    validate_player_dict(player_dict)
     try:
-        player_container.create_item(body=player_dict)
+        player_container.create_item(body=validate_player_dict(player_dict))
     except exceptions.CosmosHttpResponseError:
         raise player_already_exists_exception
     except incorrect_format_exception:
@@ -47,10 +48,14 @@ def get_player(username):
     """
     player_container = _get_player_container()
     try:
-        return player_container.read_item(username)
+        player = player_container.read_item(item=username, partition_key=username)
+        return validate_player_dict(player)
+
     except exceptions.CosmosHttpResponseError:
-        print("Username was not found")
         raise not_a_player_exception
+
+    except incorrect_format_exception:
+        logging.error("Database item was not in the correct format")
 
 
 def update_player(user_json):
@@ -58,6 +63,7 @@ def update_player(user_json):
 
     player_container = _get_player_container()
     # TODO: Update the player in the database
+    # Upsert
 
 
 def get_all_players():

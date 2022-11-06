@@ -14,11 +14,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         verify_player(player_name, player_password)
     except (not_a_player_exception, incorrect_password_exception):
-        return func.HttpResponse(
-            body=json.dumps({"result": False, "msg": "Username or password incorrect"})
-        )
+        return func.HttpResponse(body=json.dumps({"result": False, "msg": "Username or password incorrect"}))
 
-    return func.HttpResponse(
-        body=json.dumps({"result": True, "msg": "OK"})
-    )
+    return func.HttpResponse(body=json.dumps({"result": True, "msg": "OK"}))
 

@@ -19,22 +19,16 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     # Do they want us to check if both values are 0? The rest of this is pointless if it is
 
     if add_to_games_played < 0 or add_to_score < 0:
-        return func.HttpResponse(
-            body=json.dumps({"result": False, "msg": "Value to add is <=0"})
-        )
+        return func.HttpResponse(body=json.dumps({"result": False, "msg": "Value to add is <=0"}))
 
     try:
         user = verify_player(player_name, player_password)
 
     except not_a_player_exception:
-        return func.HttpResponse(
-            body=json.dumps({"result": False, "msg": "json_data does not exist"})
-        )
+        return func.HttpResponse(body=json.dumps({"result": False, "msg": "json_data does not exist"}))
 
     except incorrect_password_exception:
-        return func.HttpResponse(
-            body=json.dumps({"result": False, "msg": "wrong password"})
-        )
+        return func.HttpResponse(body=json.dumps({"result": False, "msg": "wrong password"}))
 
     # noinspection PyBroadException
     try:
@@ -46,9 +40,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         logging.error(traceback.format_exc())
         return func.HttpResponse(status_code=500)
 
-    return func.HttpResponse(
-        body=json.dumps({"result": True, "msg": "OK"})
-    )
+    return func.HttpResponse(body=json.dumps({"result": True, "msg": "OK"}))
 
 
 def get_integer_property(json_data, property_name):
