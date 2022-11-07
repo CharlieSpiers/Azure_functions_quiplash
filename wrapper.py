@@ -18,6 +18,8 @@ import config
 
 # Set the 'function' authorization level on your deployment
 # Put the relevant App key here (Refer to Lecture Thursday Week 4)
+import player_database_functions
+
 APP_KEY = config.settings['app_key']
 
 LOCAL_SERVER = "http://localhost:7071/api"
@@ -175,6 +177,13 @@ def tests():
     # you may use this function for your own testing
     # You should remove your testing before submitting your CW
     print("Your own testing that you can call functions from here")
+
+    # query = "SELECT * FROM players ORDER BY username ASC, total_score DESC"
+    # query = 'SELECT TOP 3 * FROM (SELECT * FROM player p ORDER BY p.username ASC) as p2 ORDER BY p2.total_score DESC'
+    # query = 'WITH p2 as (SELECT * FROM player p ORDER BY p.username ASC) SELECT * from p2 ORDER BY p2.total_score DESC'
+    # players = player_database_functions.query_container(sql_query=query)
+    # for p in players:
+    #     print(p['username'])
 
 
 if __name__ == '__main__':
