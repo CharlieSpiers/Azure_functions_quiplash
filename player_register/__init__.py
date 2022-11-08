@@ -7,7 +7,7 @@ from player_database_functions import add_player, player_already_exists_exceptio
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+    logging.info('Register: parsing request')
 
     player_name = req.get_json().get("username")
     player_password = req.get_json().get("password")
@@ -21,6 +21,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(body=json.dumps({"result": False, "msg": bad_password_message}))
 
     # if the credentials are the correct length, try to add to the database:
+    logging.info('Register: credentials not malformed, trying to create item in database')
     try:
         add_player(player_name, player_password)
         return func.HttpResponse(body=json.dumps({"result": True, "msg": "OK"}))

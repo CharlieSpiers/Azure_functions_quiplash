@@ -8,30 +8,34 @@ from player_database_functions import verify_player, not_a_player_exception, inc
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+    logging.info('Update: parsing request')
 
     player_name = req.get_json().get('username')
     player_password = req.get_json().get('password')
 
-    add_to_score = get_integer_property(req.get_json(), "add_to_score")
-    add_to_games_played = get_integer_property(req.get_json(), "add_to_games_played")
+    try:
+        logging.info('Update: checking inputs')
+        add_to_score = get_integer_property(req.get_json(), "add_to_score")
+        add_to_games_played = get_integer_property(req.get_json(), "add_to_games_played")
 
-    # Do they want us to check if both values are 0? The rest of this is pointless if it is
+        # Do they want us to check if both values are 0? The rest of this is pointless if it is
+        if add_to_games_played < 0 or add_to_score < 0:
+            return func.HttpResponse(body=json.dumps({"result": False, "msg": "Value to add is <=0"}))
+    except ValueError:
+        logging.info("Update: message malformed")
+        return func.HttpResponse(body=json.dumps({"result": False, "msg": "Malformed request"}))
 
-    if add_to_games_played < 0 or add_to_score < 0:
-        return func.HttpResponse(body=json.dumps({"result": False, "msg": "Value to add is <=0"}))
-
+    logging.info('Update: checking credentials')
     try:
         user = verify_player(player_name, player_password)
-
     except not_a_player_exception:
         return func.HttpResponse(body=json.dumps({"result": False, "msg": "json_data does not exist"}))
-
     except incorrect_password_exception:
         return func.HttpResponse(body=json.dumps({"result": False, "msg": "wrong password"}))
 
     # noinspection PyBroadException
     try:
+        logging.info('Update: updating values')
         user['total_score'] = user['total_score'] + add_to_score
         user['games_played'] = user['games_played'] + add_to_games_played
         update_player(user)
