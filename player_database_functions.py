@@ -1,9 +1,8 @@
-import logging
+from typing import Iterable, Any
 
 from azure import cosmos
 import azure.cosmos.exceptions as exceptions
 import config
-from validate_player_prompt import validate_player_dict, incorrect_format_exception
 
 
 def verify_player(username, password):
@@ -33,11 +32,9 @@ def add_player(username, password):
         'total_score': 0
     }
     try:
-        player_container.create_item(body=validate_player_dict(player_dict))
+        player_container.create_item(player_dict)
     except exceptions.CosmosHttpResponseError:
         raise player_already_exists_exception
-    except incorrect_format_exception:
-        print("The ")
 
 
 def get_player(username):
@@ -48,27 +45,23 @@ def get_player(username):
     """
     player_container = _get_player_container()
     try:
-        player = player_container.read_item(item=username, partition_key=username)
-        return validate_player_dict(player)
+        return player_container.read_item(item=username, partition_key=username)
 
     except exceptions.CosmosHttpResponseError:
         raise not_a_player_exception
 
-    except incorrect_format_exception:
-        logging.error("Database item was not in the correct format")
 
-
-def update_player(user_json):
-    verify_player(user_json['username'], user_json['password'])
+def update_player(player_dict, verify=True):
+    if verify:
+        verify_player(player_dict['username'], player_dict['password'])
 
     player_container = _get_player_container()
-    # TODO: Update the player in the database
-    # Upsert
+    player_container.upsert_item(player_dict)
 
 
-def get_all_players():
+def query_players(query: str) -> Iterable[dict[str, Any]]:
     player_container = _get_player_container()
-    return player_container.read_all_items()
+    return player_container.query_items(query=query, enable_cross_partition_query=True)
 
 
 def _get_player_container():

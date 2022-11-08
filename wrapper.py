@@ -181,7 +181,8 @@ def tests():
     # query = "SELECT * FROM players ORDER BY username ASC, total_score DESC"
     # query = 'SELECT TOP 3 * FROM (SELECT * FROM player p ORDER BY p.username ASC) as p2 ORDER BY p2.total_score DESC'
     # query = 'WITH p2 as (SELECT * FROM player p ORDER BY p.username ASC) SELECT * from p2 ORDER BY p2.total_score DESC'
-    # players = player_database_functions.query_container(sql_query=query)
+
+    # players = player_database_functions.query_players("SELECT TOP 2 * FROM player p ORDER BY p.total_score desc, p.username asc")
     # for p in players:
     #     print(p['username'])
 
