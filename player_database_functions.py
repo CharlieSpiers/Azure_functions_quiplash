@@ -5,7 +5,7 @@ import azure.cosmos.exceptions as exceptions
 import config
 
 
-def verify_player(username, password):
+def verify_player(username, password) -> dict[str, Any]:
     """
     Uses get_player, then checks their password matches.
     Throws incorrect_password_exception and inherited exceptions
@@ -37,7 +37,7 @@ def add_player(username, password):
         raise player_already_exists_exception
 
 
-def get_player(username):
+def get_player(username) -> dict[str, Any]:
     """
     Gets the json_data object, if it exists
     Throws not_a_player_exception

@@ -3,6 +3,7 @@ import json
 
 import azure.functions as func
 from player_database_functions import verify_player, not_a_player_exception, incorrect_password_exception
+from prompt_database_functions import add_prompt, prompt_already_exists_exception
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
@@ -20,10 +21,10 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     except (not_a_player_exception, incorrect_password_exception):
         return func.HttpResponse(body=json.dumps({"result": False, "msg": "bad username or password"}))
 
-    # if the credentials are the correct length, try to add to the database:
     try:
-        add_player(player_name, player_password)
+        add_prompt(player_name, prompt_text)
         return func.HttpResponse(body=json.dumps({"result": True, "msg": "OK"}))
 
-    except player_already_exists_exception:
-        return func.HttpResponse(body=json.dumps({"result": False, "msg": "Username already exists"}))
+    except prompt_already_exists_exception:
+        bad_prompt_message = "This user already has a prompt with the same text"
+        return func.HttpResponse(body=json.dumps({"result": False, "msg": bad_prompt_message}))
