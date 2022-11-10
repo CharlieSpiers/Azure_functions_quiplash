@@ -184,6 +184,8 @@ def tests():
     # players = player_database_functions.query_players("SELECT TOP 2 * FROM player p ORDER BY p.total_score desc, p.username asc")
     # for p in players:
     #     print(p['username'])
+    resp = requests.post("http://localhost:7071/api/prompts/get", json={})
+    print(resp.json())
 
 
 if __name__ == '__main__':
