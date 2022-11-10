@@ -16,14 +16,11 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     sql_query = f'SELECT TOP {top_k} * FROM player p ORDER BY p.total_score DESC, p.username ASC'
 
     logging.info("Leaderboard: returning leaderboard")
-    return func.HttpResponse(body=json.dumps(query_players(sql_query)))
-
-    # logging.info("Leaderboard: requesting all players")
-    # players = get_all_players()
-    #
-    # logging.info("Leaderboard: sorting players")
-    # sorted_by_name = sorted(players, key=lambda x: x['username'])
-    # sorted_by_score = sorted(sorted_by_name, key=lambda x: x['total_score'])
-    #
-    # logging.info("Leaderboard: returning leaderboard")
-    # return func.HttpResponse(body=json.dumps(sorted_by_score[:top_k]))
+    return_players = []
+    for player in query_players(sql_query):
+        return_players.append({
+            "username": player["username"],
+            "score": player["total_score"],
+            "games_played": player["games_played"]
+        })
+    return func.HttpResponse(body=json.dumps(return_players))
