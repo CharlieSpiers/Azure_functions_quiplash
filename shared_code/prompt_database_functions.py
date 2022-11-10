@@ -2,7 +2,7 @@ from azure import cosmos
 import azure.cosmos.exceptions as exceptions
 import config
 
-from player_database_functions import verify_player
+from shared_code.player_database_functions import verify_player
 
 
 def add_prompt(username, text):

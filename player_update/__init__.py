@@ -1,10 +1,9 @@
 import logging
 import json
-import traceback
 
 import azure.functions as func
 
-from player_database_functions import verify_player, not_a_player_exception, incorrect_password_exception, update_player
+from shared_code.player_database_functions import verify_player, not_a_player_exception, incorrect_password_exception, update_player
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:

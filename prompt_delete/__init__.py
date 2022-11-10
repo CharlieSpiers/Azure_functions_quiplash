@@ -2,8 +2,8 @@ import json
 import logging
 
 import azure.functions as func
-from player_database_functions import incorrect_password_exception, not_a_player_exception
-from prompt_database_functions import verify_player_and_prompt, not_a_prompt_exception, delete_prompt_by_id, access_denied_exception
+from shared_code.player_database_functions import incorrect_password_exception, not_a_player_exception
+from shared_code.prompt_database_functions import verify_player_and_prompt, not_a_prompt_exception, delete_prompt_by_id, access_denied_exception
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:

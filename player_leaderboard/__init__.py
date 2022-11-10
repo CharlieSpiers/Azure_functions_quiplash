@@ -3,7 +3,7 @@ import logging
 
 import azure.functions as func
 
-from player_database_functions import query_players
+from shared_code.player_database_functions import query_players
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:

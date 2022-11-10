@@ -3,7 +3,7 @@ import json
 
 import azure.functions as func
 
-from player_database_functions import add_player, player_already_exists_exception
+from shared_code.player_database_functions import add_player, player_already_exists_exception
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:

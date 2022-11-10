@@ -18,7 +18,6 @@ import config
 
 # Set the 'function' authorization level on your deployment
 # Put the relevant App key here (Refer to Lecture Thursday Week 4)
-import player_database_functions
 
 APP_KEY = config.settings['app_key']
 
