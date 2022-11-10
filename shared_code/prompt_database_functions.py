@@ -44,6 +44,11 @@ def get_players_prompts(username):
     return prompt_container.query_items(f'SELECT * FROM prompt p WHERE p.username = "{username}"')
 
 
+def get_all_prompts():
+    prompt_container = _get_prompt_container()
+    return prompt_container.read_all_items()
+
+
 def check_players_prompts(username, new_prompt_text):
     for prompt in get_players_prompts(username):
         if prompt['text'] == new_prompt_text:
@@ -53,7 +58,7 @@ def check_players_prompts(username, new_prompt_text):
 def get_prompt_by_id(prompt_id):
     prompt_container = _get_prompt_container()
     try:
-        return prompt_container.read_item(item=prompt_id, partition_key=prompt_id)
+        return prompt_container.read_item(item=str(prompt_id), partition_key=str(prompt_id))
 
     except exceptions.CosmosHttpResponseError:
         raise not_a_prompt_exception

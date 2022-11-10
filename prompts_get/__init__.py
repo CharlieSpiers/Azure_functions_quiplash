@@ -1,24 +1,21 @@
+import json
 import logging
+import random
 
 import azure.functions as func
 
+from shared_code.prompt_database_functions import get_all_prompts
+
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+    logging.info('Get_prompt: parsing request')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
-        else:
-            name = req_body.get('name')
+    # try:
+    prompt_number = int(req.get_json().get("prompts"))
 
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
+    prompts = get_all_prompts()
+    random.shuffle(prompts)
+    return func.HttpResponse(body=json.dumps(prompts[:prompt_number]))
+
+    # except Exception:
+    #     print("aaa")
