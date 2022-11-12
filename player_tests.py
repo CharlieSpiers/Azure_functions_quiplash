@@ -83,8 +83,7 @@ def random_string(num):
     return ''.join(random.choice(string.ascii_letters) for i in range(num))
 
 
+# python ./tests/player_tests.py
+# For manual tests e.g. leaderboard
 if __name__ == "__main__":
-    tests = TestFunction()
-    tests.test_player_register()
-    tests.test_player_login()
-    tests.test_player_update()
+    print(wrapper.player_leaderboard({"top": 4}))
