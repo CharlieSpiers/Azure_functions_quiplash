@@ -1,3 +1,4 @@
+import logging
 from typing import Iterable, Any
 
 from azure import cosmos
@@ -29,7 +30,8 @@ def add_player(username, password):
         'username': username,
         'password': password,
         'games_played': 0,
-        'total_score': 0
+        'total_score': 0,
+        'id': username
     }
     try:
         player_container.create_item(player_dict)

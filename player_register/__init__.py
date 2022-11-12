@@ -21,10 +21,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         return func.HttpResponse(body=json.dumps({"result": False, "msg": bad_password_message}))
 
     # if the credentials are the correct length, try to add to the database:
-    logging.info('Register: credentials not malformed, trying to create item in database')
+    logging.info('Register: credentials are ok, trying to create item in database')
     try:
         add_player(player_name, player_password)
+        logging.info("Player added: " + player_name)
         return func.HttpResponse(body=json.dumps({"result": True, "msg": "OK"}))
 
     except player_already_exists_exception:
+        logging.info("Player already existed: " + player_name)
         return func.HttpResponse(body=json.dumps({"result": False, "msg": "Username already exists"}))

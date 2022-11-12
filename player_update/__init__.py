@@ -12,7 +12,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     player_name = req.get_json().get('username')
     player_password = req.get_json().get('password')
 
-    # noinspection PyBroadException
     try:
         logging.info('Update: checking inputs')
         add_to_score = get_integer_property(req.get_json(), "add_to_score")
@@ -46,5 +45,5 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
 def get_integer_property(json_data, property_name):
     try:
         return int(json_data.get(property_name))
-    except ValueError:
+    except (ValueError, TypeError):
         return 0
