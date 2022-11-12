@@ -38,12 +38,15 @@ def verify_player_and_prompt(username, password, prompt_id):
 
 def update_prompt(prompt):
     prompt_container = _get_prompt_container()
+    prompt["id"] = str(prompt["id"])
     prompt_container.upsert_item(prompt)
 
 
 def query_prompts(query):
     prompt_container = _get_prompt_container()
-    return prompt_container.query_items(query=query)
+    prompts = list(prompt_container.query_items(query=query))
+    map(lambda x: trim_prompt_dict(x), prompts)
+    return prompts
 
 
 def get_players_prompts(username):
@@ -52,7 +55,9 @@ def get_players_prompts(username):
 
 def get_all_prompts():
     prompt_container = _get_prompt_container()
-    return prompt_container.read_all_items()
+    prompts = prompt_container.read_all_items()
+    map(lambda x: trim_prompt_dict(x), prompts)
+    return prompts
 
 
 def check_players_prompts(username, new_prompt_text):
@@ -64,21 +69,29 @@ def check_players_prompts(username, new_prompt_text):
 def get_prompt_by_id(prompt_id):
     prompt_container = _get_prompt_container()
     try:
-        return prompt_container.read_item(item=str(prompt_id), partition_key=str(prompt_id))
-
+        item = prompt_container.read_item(item=str(prompt_id), partition_key=str(prompt_id))
+        return trim_prompt_dict(item)
     except exceptions.CosmosHttpResponseError:
         raise not_a_prompt_exception
 
 
 def delete_prompt_by_id(prompt_id):
     prompt_container = _get_prompt_container()
-    prompt_container.delete_item(item=prompt_id, partition_key=prompt_id)
+    prompt_container.delete_item(item=str(prompt_id), partition_key=str(prompt_id))
 
 
 def _get_prompt_container():
     client = cosmos.cosmos_client.CosmosClient(config.settings['db_URI'], config.settings['db_key'])
     db_client = client.get_database_client(config.settings['db_id'])
     return db_client.get_container_client(config.settings['prompt_container'])
+
+
+def trim_prompt_dict(prompt):
+    return {
+        "id": int(prompt["id"]),
+        "text": prompt["text"],
+        "username": prompt["username"]
+    }
 
 
 class prompt_already_exists_exception(Exception):
