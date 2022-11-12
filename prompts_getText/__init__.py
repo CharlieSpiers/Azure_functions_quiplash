@@ -1,24 +1,28 @@
+import json
 import logging
 
 import azure.functions as func
+from shared_code.prompt_database_functions import query_prompts
 
 
 def main(req: func.HttpRequest) -> func.HttpResponse:
-    logging.info('Python HTTP trigger function processed a request.')
+    logging.info('Get_text: parsing request')
 
-    name = req.params.get('name')
-    if not name:
-        try:
-            req_body = req.get_json()
-        except ValueError:
-            pass
+    try:
+        word = req.get_json().get("word")
+        exact = bool(req.get_json().get("exact"))
+
+        if exact:
+            regex = f"([[:<:]]){word}([[:>:]])"
         else:
-            name = req_body.get('name')
+            regex = f"([[:<:]])(?i){word}([[:>:]])"
 
-    if name:
-        return func.HttpResponse(f"Hello, {name}. This HTTP triggered function executed successfully.")
-    else:
-        return func.HttpResponse(
-             "This HTTP triggered function executed successfully. Pass a name in the query string or in the request body for a personalized response.",
-             status_code=200
-        )
+        logging.info('Get_text: sending query')
+        query = f"SELECT prompt.text, prompt.username, prompt.id FROM prompt WHERE " \
+                f"RegexMatch(prompt.text, '{regex}')"
+
+        return func.HttpResponse(body=json.dumps(list(query_prompts(query))))
+
+    except (TypeError, ValueError):
+        logging.info('Get_text: something went wrong')
+        return func.HttpResponse(status_code=500)

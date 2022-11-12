@@ -1,3 +1,5 @@
+import random
+
 from azure import cosmos
 import azure.cosmos.exceptions as exceptions
 import config
@@ -11,19 +13,18 @@ def add_prompt(username, text):
     Throws prompt_already_exists_exception
     """
     prompt_container = _get_prompt_container()
-    # TODO: Figure out how to do these random, non-colliding ids
-    # added = False
-    # while not added:
-    #     prompt_dict = {
-    #         'id': abs(hash(username + ": " + text)),
-    #         'username': username,
-    #         'text': text
-    #     }
-    #     try:
-    #         prompt_container.create_item(prompt_dict)
-    #         added = True
-    #     except exceptions.CosmosHttpResponseError as e:
-    #         print(e.message)
+
+    # Nice big random integer
+    random_id = int((random.random() * (10**10)) * random.random() * (10**10))
+    prompt_dict = {
+        'id': str(random_id),
+        'username': username,
+        'text': text
+    }
+    try:
+        prompt_container.create_item(prompt_dict)
+    except exceptions.CosmosHttpResponseError as e:
+        print(e.message)
 
 
 def verify_player_and_prompt(username, password, prompt_id):
@@ -37,11 +38,16 @@ def verify_player_and_prompt(username, password, prompt_id):
 
 def update_prompt(prompt):
     prompt_container = _get_prompt_container()
+    prompt_container.upsert_item(prompt)
+
+
+def query_prompts(query):
+    prompt_container = _get_prompt_container()
+    return prompt_container.query_items(query=query)
 
 
 def get_players_prompts(username):
-    prompt_container = _get_prompt_container()
-    return prompt_container.query_items(f'SELECT * FROM prompt p WHERE p.username = "{username}"')
+    return query_prompts(f'SELECT * FROM prompt p WHERE p.username = "{username}"')
 
 
 def get_all_prompts():

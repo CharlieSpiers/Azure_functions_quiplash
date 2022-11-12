@@ -13,6 +13,8 @@ Purposes of this file
 """
 
 # Note this requirement, in case you run this from outside the venv you are working on
+import random
+
 import requests
 import config
 
@@ -184,9 +186,9 @@ def tests():
     # players = player_database_functions.query_players("SELECT TOP 2 * FROM player p ORDER BY p.total_score desc, p.username asc")
     # for p in players:
     #     print(p['username'])
-    resp = requests.post("http://localhost:7071/api/prompts/get", json={})
-    print(resp.json())
 
+    # resp = requests.post("http://localhost:7071/api/prompts/get", json={})
+    # print(resp.json())
 
 if __name__ == '__main__':
     # If the script is called from the console or inside an IDE

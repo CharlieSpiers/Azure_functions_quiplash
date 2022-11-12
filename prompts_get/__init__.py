@@ -13,11 +13,12 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     try:
         prompt_number = int(req.get_json().get("prompts"))
         prompts = list(get_all_prompts())
+        random.shuffle(prompts)
         return func.HttpResponse(body=json.dumps(prompts[:prompt_number]))
     except (TypeError, ValueError):
         logging.info("Get_prompt: there was no prompt_number, trying players")
         players = req.get_json().get("players")
         prompts = []
         for player in players:
-            prompts.extend(get_players_prompts(player))
+            prompts.extend(list(get_players_prompts(player)))
         return func.HttpResponse(body=json.dumps(prompts))
