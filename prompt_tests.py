@@ -8,9 +8,11 @@ import wrapper
 # pytest .\prompt_tests.py -s
 class TestFunction(unittest.TestCase):
 
+    TEST_LOCALLY = False
+
     def attempt_test(self, method, dict_input, expected_output):
         final_output = {'result': expected_output[0], 'msg': expected_output[1]}
-        self.assertEqual(final_output, method(dict_input, False))
+        self.assertEqual(final_output, method(dict_input, self.TEST_LOCALLY))
 
     def test_prompt_create(self):
         random_username = random_string(8)
@@ -30,7 +32,7 @@ class TestFunction(unittest.TestCase):
         try:
             create = wrapper.prompt_create
             self.attempt_test(create, inputs['random_user1'], outputs['bad_creds'])
-            wrapper.player_register(inputs["random_user1"])
+            wrapper.player_register(inputs["random_user1"], self.TEST_LOCALLY)
             self.attempt_test(create, inputs['random_user1'], outputs['pass'])
             self.attempt_test(create, inputs['random_user1'], outputs['same_text'])
             self.attempt_test(create, inputs['bad_text1'], outputs['prompt_length'])
@@ -55,12 +57,12 @@ class TestFunction(unittest.TestCase):
         try:
             edit = wrapper.prompt_edit
             self.attempt_test(edit, inputs['random_user'], outputs['bad_creds'])
-            wrapper.player_register(inputs["random_user"])
+            wrapper.player_register(inputs["random_user"], self.TEST_LOCALLY)
             self.attempt_test(edit, inputs['random_user'], outputs['bad_pid'])
             self.attempt_test(wrapper.prompt_delete, inputs['random_user'], outputs['bad_pid'])
 
-            wrapper.prompt_create(inputs['random_user'])
-            id1 = int(wrapper.prompts_get({'players': [uname]})[0]['id'])
+            wrapper.prompt_create(inputs['random_user'], self.TEST_LOCALLY)
+            id1 = int(wrapper.prompts_get({'players': [uname]}, self.TEST_LOCALLY)[0]['id'])
             inputs['random_user']['id'] = id1
             inputs['bad_prompt_len']['id'] = id1
 

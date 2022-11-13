@@ -8,9 +8,11 @@ import wrapper
 # pytest ./tests/player_tests.py -s
 class TestFunction(unittest.TestCase):
 
+    TEST_LOCALLY = False
+
     def attempt_test(self, method, dict_input, expected_output):
         final_output = {'result': expected_output[0], 'msg': expected_output[1]}
-        self.assertEqual(final_output, method(dict_input, True))
+        self.assertEqual(final_output, method(dict_input, self.TEST_LOCALLY))
 
     def test_player_register(self):
         inputs = {
@@ -49,7 +51,7 @@ class TestFunction(unittest.TestCase):
         try:
             login = wrapper.player_login
             self.attempt_test(login, inputs['random_user'], outputs['bad_creds'])
-            wrapper.player_register(inputs['random_user'])
+            wrapper.player_register(inputs['random_user'], self.TEST_LOCALLY)
             self.attempt_test(login, inputs['random_user'], outputs['pass'])
         except Exception as e:
             self.fail(e)
@@ -70,7 +72,7 @@ class TestFunction(unittest.TestCase):
         }
         try:
             update = wrapper.player_update
-            wrapper.player_register(inputs['random_user'])
+            wrapper.player_register(inputs['random_user'], self.TEST_LOCALLY)
             self.attempt_test(update, inputs['random_user'], outputs['pass'])
             self.attempt_test(update, inputs['random_user_bad_pass'], outputs['bad_password'])
             self.attempt_test(update, inputs['random_user_bad_score'], outputs['bad_value'])
