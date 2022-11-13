@@ -30,6 +30,6 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
     except access_denied_exception:
         return func.HttpResponse(body=json.dumps({"result": False, "msg": "access denied"}))
 
-    except ValueError:
+    except (ValueError, Exception):
         logging.info("Malformed request")
         return func.HttpResponse(body=json.dumps({"result": False, "msg": "Malformed request"}))

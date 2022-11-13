@@ -17,7 +17,7 @@ def main(req: func.HttpRequest) -> func.HttpResponse:
         new_text = req.get_json().get("text")
 
         if not (20 <= len(new_text) <= 100):
-            return func.HttpResponse(body=json.dumps({"result": False, "msg": "prompt length is <20 or > 100 characters"}))
+            return func.HttpResponse(body=json.dumps({"result": False, "msg": "prompt length is <20 or >100 characters"}))
 
         logging.info('Edit: checking if the user already has this prompt text')
         check_players_prompts(player_name, new_text)

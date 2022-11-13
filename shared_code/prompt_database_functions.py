@@ -44,9 +44,8 @@ def update_prompt(prompt):
 
 def query_prompts(query):
     prompt_container = _get_prompt_container()
-    prompts = list(prompt_container.query_items(query=query))
-    map(lambda x: trim_prompt_dict(x), prompts)
-    return prompts
+    prompts = list(prompt_container.query_items(query=query, enable_cross_partition_query=True))
+    return [prompt for prompt in map(lambda x: trim_prompt_dict(x), prompts)]
 
 
 def get_players_prompts(username):
@@ -56,14 +55,13 @@ def get_players_prompts(username):
 def get_all_prompts():
     prompt_container = _get_prompt_container()
     prompts = prompt_container.read_all_items()
-    map(lambda x: trim_prompt_dict(x), prompts)
-    return prompts
+    return [prompt for prompt in map(lambda x: trim_prompt_dict(x), prompts)]
 
 
 def check_players_prompts(username, new_prompt_text):
     for prompt in get_players_prompts(username):
         if prompt['text'] == new_prompt_text:
-            return prompt_already_exists_exception
+            raise prompt_already_exists_exception
 
 
 def get_prompt_by_id(prompt_id):
